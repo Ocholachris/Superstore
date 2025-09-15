@@ -480,6 +480,9 @@
     .chatbot-large-icon {
         font-size: 2em;
     }
+    #announcement-form {
+        display: block;
+    }
     </style>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -525,7 +528,7 @@
                         </p>
                     </div>
                     <div class="form-group">
-                        <button onclick="addStoreLocation()" class="primary-btn">
+                        <button onclick="requireAdminPassword(() => addStoreLocation())" class="primary-btn">
                             <i class="fas fa-plus-circle icon-space-right"></i>Add Location
                         </button>
                     </div>
@@ -539,16 +542,16 @@
         <div class="admin-section">
             <label for="announcement">Store Announcements</label>
             <div class="form-section">
-                <p class="section-desc">
+                <div id="announcement-form" class="form-section">
                     Create announcements to inform customers about new products, special offers, or important updates.
                 </p>
-                <div id="announcement-form" class="form-section" style="display: block;">
+                <div id="announcement-form" class="form-section announcement-form-visible">
                     <textarea id="announcement" rows="4" placeholder="Enter your announcement here..."></textarea>
                     <button onclick="postAnnouncement()" class="primary-btn">
                         <i class="fas fa-paper-plane icon-space-right"></i>Publish
                     </button>
                 </div>
-                <div id="current-announcement" class="form-section" style="display: none;">
+                <div id="current-announcement" class="form-section announcement-form-hidden">
                     <h4 class="current-announcement-title">Current Announcement</h4>
                     <p id="announcement-text" class="section-desc"></p>
                     <div class="button-group">
@@ -578,39 +581,68 @@
             </div>
         </div>
 
+        <!-- Admin Password Modal -->
+        <div id="admin-action-password-modal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close" onclick="document.getElementById('admin-action-password-modal').style.display='none'">&times;</span>
+                <h3 class="modal-title">Enter Admin Password</h3>
+                <input type="password" id="admin-action-password" placeholder="Enter password">
+                <div id="admin-action-password-error" style="color:#e53935;display:none;margin-top:8px;"></div>
+                <button onclick="confirmAdminAction()" class="primary-btn">Continue</button>
+            </div>
+        </div>
+
         <script>
+        let pendingAdminAction = null;
+        function requireAdminPassword(actionFn) {
+            pendingAdminAction = actionFn;
+            document.getElementById('admin-action-password-modal').style.display = 'block';
+            document.getElementById('admin-action-password').value = '';
+            document.getElementById('admin-action-password-error').style.display = 'none';
+            document.getElementById('admin-action-password').focus();
+        }
+        function confirmAdminAction() {
+            const password = document.getElementById('admin-action-password').value;
+            const errorDiv = document.getElementById('admin-action-password-error');
+            if (password === '15405681540568') {
+                errorDiv.style.display = 'none';
+                document.getElementById('admin-action-password-modal').style.display = 'none';
+                if (typeof pendingAdminAction === 'function') {
+                    pendingAdminAction();
+                }
+            } else {
+                errorDiv.textContent = 'Incorrect password. Please try again.';
+                errorDiv.style.display = 'block';
+                document.getElementById('admin-action-password').value = '';
+                document.getElementById('admin-action-password').focus();
+            }
+        }
+
         // Store Locations Management
         function addStoreLocation() {
-            const name = document.getElementById('location-name').value.trim();
-            const address = document.getElementById('location-address').value.trim();
-            const whatsapp = document.getElementById('location-whatsapp').value.trim();
-            const call = document.getElementById('location-call').value.trim();
-            const mapsLink = document.getElementById('location-maps').value.trim();
-
-            if (!name || !address) {
-                alert('Please enter store name and address');
-                return;
-            }
-
-            const locations = JSON.parse(localStorage.getItem('store_locations') || '[]');
-            
-            // Check for duplicate location names
-            if (locations.some(loc => loc.name === name)) {
-                alert('A location with this name already exists');
-                return;
-            }
-
-            locations.push({
-                name,
-                address,
-                whatsapp,
-                call,
-                mapsLink
+            requireAdminPassword(() => {
+                const name = document.getElementById('location-name').value.trim();
+                const address = document.getElementById('location-address').value.trim();
+                const whatsapp = document.getElementById('location-whatsapp').value.trim();
+                const call = document.getElementById('location-call').value.trim();
+                const mapsLink = document.getElementById('location-maps').value.trim();
+                if (!name || !address) {
+                    alert('Please enter store name and address');
+                    return;
+                }
+                const locations = JSON.parse(localStorage.getItem('store_locations') || '[]');
+                if (locations.some(loc => loc.name === name)) {
+                    alert('A location with this name already exists');
+                    return;
+                }
+                locations.push({ name, address, whatsapp, call, mapsLink });
+                localStorage.setItem('store_locations', JSON.stringify(locations));
+                if (window.storeData && typeof window.storeData.updateLocations === 'function') {
+                    window.storeData.updateLocations(locations);
+                }
+                renderStoreLocations();
+                clearLocationForm();
             });
-
-            localStorage.setItem('store_locations', JSON.stringify(locations));
-            renderStoreLocations();
-            clearLocationForm();
         }
 
         function deleteStoreLocation(name) {
@@ -626,7 +658,7 @@
                         Are you sure you want to delete the location "${name}"?
                     </p>
                     <div class="button-group">
-                        <button class="primary-btn" onclick="confirmDeleteLocation('${name}')">Yes, Delete Location</button>
+                        <button class="primary-btn" onclick="requireAdminPassword(() => confirmDeleteLocation('${name}'))">Yes, Delete Location</button>
                         <button class="secondary-btn" onclick="this.parentElement.parentElement.parentElement.remove()">Cancel</button>
                     </div>
                 </div>
@@ -635,11 +667,16 @@
         }
 
         function confirmDeleteLocation(name) {
-            let locations = JSON.parse(localStorage.getItem('store_locations') || '[]');
-            locations = locations.filter(loc => loc.name !== name);
-            localStorage.setItem('store_locations', JSON.stringify(locations));
-            renderStoreLocations();
-            document.querySelector('.modal').remove();
+            requireAdminPassword(() => {
+                let locations = JSON.parse(localStorage.getItem('store_locations') || '[]');
+                locations = locations.filter(loc => loc.name !== name);
+                localStorage.setItem('store_locations', JSON.stringify(locations));
+                if (window.storeData && typeof window.storeData.updateLocations === 'function') {
+                    window.storeData.updateLocations(locations);
+                }
+                renderStoreLocations();
+                document.querySelector('.modal').remove();
+            });
         }
 
         function clearLocationForm() {
@@ -664,49 +701,44 @@
             // Change add button to update button
             const addButton = document.querySelector('.location-form button.primary-btn');
             addButton.innerHTML = '<i class="fas fa-save icon-space-right"></i>Update Location';
-            addButton.onclick = () => updateStoreLocation(name);
+            addButton.onclick = function() { requireAdminPassword(() => updateStoreLocation(name)); };
 
             // Scroll to form
             document.querySelector('.location-form').scrollIntoView({ behavior: 'smooth' });
         }
 
         function updateStoreLocation(oldName) {
-            const name = document.getElementById('location-name').value.trim();
-            const address = document.getElementById('location-address').value.trim();
-            const whatsapp = document.getElementById('location-whatsapp').value.trim();
-            const call = document.getElementById('location-call').value.trim();
-            const mapsLink = document.getElementById('location-maps').value.trim();
-
-            if (!name || !address) {
-                alert('Please enter store name and address');
-                return;
-            }
-
-            let locations = JSON.parse(localStorage.getItem('store_locations') || '[]');
-            
-            // Check for duplicate names only if name was changed
-            if (name !== oldName && locations.some(loc => loc.name === name)) {
-                alert('A location with this name already exists');
-                return;
-            }
-
-            // Update the location
-            locations = locations.map(loc => {
-                if (loc.name === oldName) {
-                    return { name, address, whatsapp, call, mapsLink };
+            requireAdminPassword(() => {
+                const name = document.getElementById('location-name').value.trim();
+                const address = document.getElementById('location-address').value.trim();
+                const whatsapp = document.getElementById('location-whatsapp').value.trim();
+                const call = document.getElementById('location-call').value.trim();
+                const mapsLink = document.getElementById('location-maps').value.trim();
+                if (!name || !address) {
+                    alert('Please enter store name and address');
+                    return;
                 }
-                return loc;
+                let locations = JSON.parse(localStorage.getItem('store_locations') || '[]');
+                if (name !== oldName && locations.some(loc => loc.name === name)) {
+                    alert('A location with this name already exists');
+                    return;
+                }
+                locations = locations.map(loc => {
+                    if (loc.name === oldName) {
+                        return { name, address, whatsapp, call, mapsLink };
+                    }
+                    return loc;
+                });
+                localStorage.setItem('store_locations', JSON.stringify(locations));
+                if (window.storeData && typeof window.storeData.updateLocations === 'function') {
+                    window.storeData.updateLocations(locations);
+                }
+                clearLocationForm();
+                const addButton = document.querySelector('.location-form button.primary-btn');
+                addButton.innerHTML = '<i class="fas fa-plus-circle icon-space-right"></i>Add Location';
+                addButton.onclick = addStoreLocation;
+                renderStoreLocations();
             });
-
-            localStorage.setItem('store_locations', JSON.stringify(locations));
-            
-            // Reset form and button
-            clearLocationForm();
-            const addButton = document.querySelector('.location-form button.primary-btn');
-            addButton.innerHTML = '<i class="fas fa-plus-circle icon-space-right"></i>Add Location';
-            addButton.onclick = addStoreLocation;
-
-            renderStoreLocations();
         }
 
         function renderStoreLocations() {
@@ -746,13 +778,20 @@
 
         function loadCurrentAnnouncement() {
             const announcement = JSON.parse(localStorage.getItem('announcements') || '""');
+            const currentAnnouncement = document.getElementById('current-announcement');
+            const announcementForm = document.getElementById('announcement-form');
+            
             if (announcement && announcement.trim()) {
                 document.getElementById('announcement-text').textContent = announcement;
-                document.getElementById('current-announcement').style.display = 'block';
-                document.getElementById('announcement-form').style.display = 'none';
+                currentAnnouncement.classList.remove('announcement-form-hidden');
+                currentAnnouncement.classList.add('announcement-form-visible');
+                announcementForm.classList.remove('announcement-form-visible');
+                announcementForm.classList.add('announcement-form-hidden');
             } else {
-                document.getElementById('current-announcement').style.display = 'none';
-                document.getElementById('announcement-form').style.display = 'block';
+                currentAnnouncement.classList.remove('announcement-form-visible');
+                currentAnnouncement.classList.add('announcement-form-hidden');
+                announcementForm.classList.remove('announcement-form-hidden');
+                announcementForm.classList.add('announcement-form-visible');
             }
         }
 
@@ -1387,7 +1426,7 @@
     
     <!-- Chatbot -->
     <button class="chatbot-button" onclick="toggleChatbot()" title="Open Admin Chatbot">
-    <i class="fas fa-comments" style="font-size: 2em;"></i>
+    <i class="fas fa-comments"></i>
     </button>
     <div id="chatbot" class="chatbot-window">
         <div class="chatbot-header">
