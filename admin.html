@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ochola Superstore Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0f7fa 0%, #fffde4 100%);
+            min-height: 100vh;
+        }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+        }
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            position: relative;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        .modal-title {
+            color: #1565c0;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .modal-close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .modal-close:hover {
+            color: #666;
+        }
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .header {
+            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+            color: #fff;
+            padding: 24px 0 12px 0;
+            font-size: 2.2em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            box-shadow: 0 2px 12px rgba(44,62,80,0.10);
+            border-radius: 0 0 18px 18px;
+        }
+        .footer {
+            background: #1565c0;
+            color: #fff;
+            text-align: center;
+            padding: 18px 0 12px 0;
+            font-size: 1em;
+            border-radius: 18px 18px 0 0;
+            margin-top: 40px;
+        }
+        .container {
+            max-width: 650px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 40px 32px 32px 32px;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(44, 62, 80, 0.12);
+            text-align: center;
+            position: relative;
+        }
+        .admin-section {
+            background: #f7f7f7;
+            border-radius: 14px;
+            box-shadow: 0 2px 16px rgba(44,62,80,0.10);
+            padding: 28px 24px;
+            margin-bottom: 24px;
+            transition: box-shadow 0.2s;
+        }
+        .admin-section:hover {
+            box-shadow: 0 4px 24px rgba(44,62,80,0.18);
+        }
+        h1 {
+            color: #1565c0;
+            margin-bottom: 24px;
+            font-size: 2em;
+            font-weight: 700;
+        }
+        label {
+            display: block;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #1565c0;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            font-size: 1em;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #43e97b;
+            box-shadow: 0 0 0 3px rgba(67, 233, 123, 0.2);
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .section-title {
+            color: #388e3c;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .section-desc {
+            color: #666;
+            margin-bottom: 15px;
+            text-align: left;
+            line-height: 1.5;
+        }
+        .announcement-desc {
+            color: #666;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .primary-btn {
+            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 233, 123, 0.2);
+        }
+        .icon-margin {
+            margin-right: 8px;
+        }
+        .success-text {
+            color: #388e3c;
+            margin: 20px 0;
+        }
+        .warning-text {
+            color: #e53935;
+            margin: 20px 0;
+        }
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .secondary-btn {
+            background: #f5f5f5;
+            color: #666;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .secondary-btn:hover {
+            background: #e0e0e0;
+        }
+        .secondary-btn-danger {
+            background: #e53935 !important;
+            color: white !important;
+        }
+        .price-input-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            transition: background-color 0.2s;
+        }
+        .price-input-group:hover {
+            background: #f0f1f2;
+        }
+        .price-input-group input {
+            margin-bottom: 0;
+        }
+        .price-input-group input.price-input {
+            width: 150px;
+        }
+        .price-input-group input.price-desc {
+            flex: 1;
+        }
+        .price-input-group button {
+            padding: 10px 15px;
+            margin: 0;
+            white-space: nowrap;
+            background: #388e3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .price-input-group button:hover {
+            background: #2e7d32;
+            transform: translateY(-1px);
+        }
+        .price-input-group button.remove-price {
+            background: #e53935;
+        }
+        .price-input-group button.remove-price:hover {
+            background: #d32f2f;
+        }
+        .prices-container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .prices-container label {
+            display: block;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        button {
+            font-size: 1.1em;
+            padding: 12px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(44,62,80,0.08);
+            margin-bottom: 10px;
+        }
+        .nav-btn {
+            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+            color: #fff;
+            font-weight: 600;
+        }
+        .nav-btn:hover {
+            background: linear-gradient(90deg, #38f9d7 0%, #43e97b 100%);
+            transform: translateY(-2px) scale(1.03);
+        }
+        .back-btn {
+            background: #1565c0;
+            color: #fff;
+        }
+        .admin-section strong {
+            font-size: 1.15em;
+            color: #388e3c;
+            margin-bottom: 10px;
+            display: block;
+        }
+        ul.category-list, ul {
+            padding-left: 0;
+        }
+        li {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(44,62,80,0.08);
+            margin-bottom: 10px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        li img {
+            box-shadow: 0 2px 8px rgba(44,62,80,0.10);
+        }
+        .admin-section-margin {
+            margin-top: 32px;
+        }
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f7f7f7; }
+        .container { max-width: 600px; margin: auto; background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        h1 { color: #1565c0; margin-bottom: 24px; }
+        .admin-section { margin-top: 24px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; }
+        input, textarea { width: 100%; padding: 8px; margin-bottom: 16px; border-radius: 4px; border: 1px solid #ccc; }
+        button { background: #1565c0; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
+        button:hover { background: #0d47a1; }
+        .nav-btn { background: #e0e0e0; color: #333; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
+        .nav-btn:hover { background: #d5d5d5; }
+
+        /* Location Management Styles */
+        .location-form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .location-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .location-card h3 {
+            color: #1565c0;
+            margin: 0 0 10px 0;
+        }
+        .location-card p {
+            color: #666;
+            margin: 5px 0;
+        }
+        .location-flex {
+            display: flex;
+            gap: 15px;
+        }
+        .location-flex-item {
+            flex: 1;
+        }
+        .helper-text {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+        .locations-list {
+            margin-top: 20px;
+        }
+        .icon-space-right {
+            margin-right: 8px;
+        }
+        .section-desc {
+            color: #666;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+    /* Chatbot Styles */
+    .chatbot-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 12px rgba(67, 233, 123, 0.3);
+        cursor: pointer;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.3s;
+    }
+    .chatbot-icon {
+        font-size: 2em;
+    }
+    .chatbot-button:hover {
+        transform: scale(1.1);
+    }
+    .chatbot-window {
+        position: fixed;
+        bottom: 90px;
+        right: 20px;
+        width: 300px;
+        height: 400px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+        z-index: 999;
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .chatbot-header {
+        background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+        padding: 15px;
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .chatbot-messages {
+        flex-grow: 1;
+        padding: 15px;
+        overflow-y: auto;
+    }
+    .chatbot-input {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #eee;
+    }
+    .chatbot-input input {
+        flex-grow: 1;
+        margin: 0;
+        margin-right: 10px;
+    }
+    .chatbot-input button {
+        padding: 8px 15px;
+        margin: 0;
+    }
+    .chat-message {
+        margin-bottom: 10px;
+        max-width: 80%;
+    }
+    .chat-message.user {
+        margin-left: auto;
+        background: #e3f2fd;
+        padding: 8px 12px;
+        border-radius: 15px 15px 0 15px;
+    }
+    .chat-message.bot {
+        background: #f5f5f5;
+        padding: 8px 12px;
+        border-radius: 15px 15px 15px 0;
+    }
+    .current-announcement {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        display: none;
+    }
+    .current-announcement-title {
+        margin: 0;
+        color: #1565c0;
+    }
+    .current-announcement-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+    }
+    .announcement-edit-btn {
+        margin: 0;
+        padding: 8px 12px;
+    }
+    .announcement-btn-group {
+        display: flex;
+        gap: 10px;
+    }
+    .secondary-btn-danger {
+        background: #e53935 !important;
+        color: white !important;
+    }
+    .chatbot-large-icon {
+        font-size: 2em;
+    }
+    </style>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="header">Ochola Superstore Admin Panel</div>
+    <div class="container">
+        <button class="nav-btn back-btn" onclick="window.location.href='index.html'">
+            <i class="fas fa-arrow-left icon-space-right"></i>Back to Store
+        </button>
+        
+        <h1>Admin Dashboard</h1>
+        <!-- Store Locations Section -->
+        <div class="admin-section">
+            <label>Store Locations</label>
+            <div class="form-section">
+                <p class="section-desc">
+                    Manage your store locations, contact information, and map locations.
+                </p>
+                <div class="location-form">
+                    <div class="form-group">
+                        <label for="location-name">Store Location Name:</label>
+                        <input type="text" id="location-name" placeholder="e.g., Main Branch, City Mall Branch">
+                    </div>
+                    <div class="form-group">
+                        <label for="location-address">Physical Address:</label>
+                        <textarea id="location-address" rows="2" placeholder="Enter detailed physical address"></textarea>
+                    </div>
+                    <div class="form-group location-flex">
+                        <div class="location-flex-item">
+                            <label for="location-whatsapp">WhatsApp Number:</label>
+                            <input type="text" id="location-whatsapp" placeholder="e.g., 254700000000">
+                        </div>
+                        <div class="location-flex-item">
+                            <label for="location-call">Call Number:</label>
+                            <input type="text" id="location-call" placeholder="e.g., 254700000000">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="location-maps">Google Maps Link:</label>
+                        <input type="text" id="location-maps" placeholder="Paste Google Maps share link">
+                        <p class="helper-text">
+                            To get the map link: Open Google Maps → Select your location → Share → Copy link
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <button onclick="addStoreLocation()" class="primary-btn">
+                            <i class="fas fa-plus-circle icon-space-right"></i>Add Location
+                        </button>
+                    </div>
+                </div>
+                <div id="locations-list" class="locations-list">
+                    <!-- Locations will be listed here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-section">
+            <label for="announcement">Store Announcements</label>
+            <div class="form-section">
+                <p class="section-desc">
+                    Create announcements to inform customers about new products, special offers, or important updates.
+                </p>
+                <div id="announcement-form" class="form-section" style="display: block;">
+                    <textarea id="announcement" rows="4" placeholder="Enter your announcement here..."></textarea>
+                    <button onclick="postAnnouncement()" class="primary-btn">
+                        <i class="fas fa-paper-plane icon-space-right"></i>Publish
+                    </button>
+                </div>
+                <div id="current-announcement" class="form-section" style="display: none;">
+                    <h4 class="current-announcement-title">Current Announcement</h4>
+                    <p id="announcement-text" class="section-desc"></p>
+                    <div class="button-group">
+                        <button onclick="editAnnouncement()" class="primary-btn">
+                            <i class="fas fa-edit icon-space-right"></i>Edit
+                        </button>
+                        <button onclick="clearAnnouncement()" class="secondary-btn secondary-btn-danger">
+                            <i class="fas fa-trash icon-space-right"></i>Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Announcement Success Modal -->
+        <div id="announcement-modal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close" onclick="closeAnnouncementModal()">&times;</span>
+                <h3 class="modal-title">Announcement Published</h3>
+                <p class="success-text">
+                    <i class="fas fa-check-circle icon-space-right"></i>
+                    Your announcement has been successfully published to the store.
+                </p>
+                <button onclick="closeAnnouncementModal()" class="primary-btn">
+                    Done
+                </button>
+            </div>
+        </div>
+
+        <script>
+        // Store Locations Management
+        function addStoreLocation() {
+            const name = document.getElementById('location-name').value.trim();
+            const address = document.getElementById('location-address').value.trim();
+            const whatsapp = document.getElementById('location-whatsapp').value.trim();
+            const call = document.getElementById('location-call').value.trim();
+            const mapsLink = document.getElementById('location-maps').value.trim();
+
+            if (!name || !address) {
+                alert('Please enter store name and address');
+                return;
+            }
+
+            const locations = JSON.parse(localStorage.getItem('store_locations') || '[]');
+            
+            // Check for duplicate location names
+            if (locations.some(loc => loc.name === name)) {
+                alert('A location with this name already exists');
+                return;
+            }
+
+            locations.push({
+                name,
+                address,
+                whatsapp,
+                call,
+                mapsLink
+            });
+
+            localStorage.setItem('store_locations', JSON.stringify(locations));
+            renderStoreLocations();
+            clearLocationForm();
+        }
+
+        function deleteStoreLocation(name) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <span class="modal-close" onclick="this.parentElement.parentElement.remove()">&times;</span>
+                    <h3 class="modal-title">Confirm Deletion</h3>
+                    <p class="warning-text">
+                        <i class="fas fa-exclamation-triangle icon-margin"></i>
+                        Are you sure you want to delete the location "${name}"?
+                    </p>
+                    <div class="button-group">
+                        <button class="primary-btn" onclick="confirmDeleteLocation('${name}')">Yes, Delete Location</button>
+                        <button class="secondary-btn" onclick="this.parentElement.parentElement.parentElement.remove()">Cancel</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function confirmDeleteLocation(name) {
+            let locations = JSON.parse(localStorage.getItem('store_locations') || '[]');
+            locations = locations.filter(loc => loc.name !== name);
+            localStorage.setItem('store_locations', JSON.stringify(locations));
+            renderStoreLocations();
+            document.querySelector('.modal').remove();
+        }
+
+        function clearLocationForm() {
+            document.getElementById('location-name').value = '';
+            document.getElementById('location-address').value = '';
+            document.getElementById('location-whatsapp').value = '';
+            document.getElementById('location-call').value = '';
+            document.getElementById('location-maps').value = '';
+        }
+
+        function editStoreLocation(name) {
+            const locations = JSON.parse(localStorage.getItem('store_locations') || '[]');
+            const location = locations.find(loc => loc.name === name);
+            if (!location) return;
+
+            document.getElementById('location-name').value = location.name;
+            document.getElementById('location-address').value = location.address;
+            document.getElementById('location-whatsapp').value = location.whatsapp || '';
+            document.getElementById('location-call').value = location.call || '';
+            document.getElementById('location-maps').value = location.mapsLink || '';
+
+            // Change add button to update button
+            const addButton = document.querySelector('.location-form button.primary-btn');
+            addButton.innerHTML = '<i class="fas fa-save icon-space-right"></i>Update Location';
+            addButton.onclick = () => updateStoreLocation(name);
+
+            // Scroll to form
+            document.querySelector('.location-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function updateStoreLocation(oldName) {
+            const name = document.getElementById('location-name').value.trim();
+            const address = document.getElementById('location-address').value.trim();
+            const whatsapp = document.getElementById('location-whatsapp').value.trim();
+            const call = document.getElementById('location-call').value.trim();
+            const mapsLink = document.getElementById('location-maps').value.trim();
+
+            if (!name || !address) {
+                alert('Please enter store name and address');
+                return;
+            }
+
+            let locations = JSON.parse(localStorage.getItem('store_locations') || '[]');
+            
+            // Check for duplicate names only if name was changed
+            if (name !== oldName && locations.some(loc => loc.name === name)) {
+                alert('A location with this name already exists');
+                return;
+            }
+
+            // Update the location
+            locations = locations.map(loc => {
+                if (loc.name === oldName) {
+                    return { name, address, whatsapp, call, mapsLink };
+                }
+                return loc;
+            });
+
+            localStorage.setItem('store_locations', JSON.stringify(locations));
+            
+            // Reset form and button
+            clearLocationForm();
+            const addButton = document.querySelector('.location-form button.primary-btn');
+            addButton.innerHTML = '<i class="fas fa-plus-circle icon-space-right"></i>Add Location';
+            addButton.onclick = addStoreLocation;
+
+            renderStoreLocations();
+        }
+
+        function renderStoreLocations() {
+            const locations = JSON.parse(localStorage.getItem('store_locations') || '[]');
+            const container = document.getElementById('locations-list');
+            
+            if (locations.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center;">No store locations added yet.</p>';
+                return;
+            }
+
+            container.innerHTML = locations.map(loc => `
+                <div class="location-card">
+                    <div style="display: flex; justify-content: flex-end; margin-bottom: 10px; gap: 10px;">
+                        <button onclick="editStoreLocation('${loc.name}')" class="primary-btn" style="margin: 0; padding: 8px 12px;">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button onclick="deleteStoreLocation('${loc.name}')" class="secondary-btn" style="margin: 0; padding: 8px 12px; background: #e53935; color: white;">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                    <div>
+                        <h3 class="location-title">${loc.name}</h3>
+                        <p class="location-info"><i class="fas fa-map-marker-alt icon-space-right"></i>${loc.address}</p>
+                        ${loc.whatsapp ? `<p class="location-info"><i class="fab fa-whatsapp icon-space-right"></i>WhatsApp: ${loc.whatsapp}</p>` : ''}
+                        ${loc.call ? `<p class="location-info"><i class="fas fa-phone icon-space-right"></i>Call: ${loc.call}</p>` : ''}
+                        ${loc.mapsLink ? `<a href="${loc.mapsLink}" target="_blank" class="secondary-btn" style="display: inline-block; margin-top: 10px;">
+                            <i class="fas fa-map icon-space-right"></i>View on Maps
+                        </a>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize store locations
+        renderStoreLocations();
+
+        function loadCurrentAnnouncement() {
+            const announcement = JSON.parse(localStorage.getItem('announcements') || '""');
+            if (announcement && announcement.trim()) {
+                document.getElementById('announcement-text').textContent = announcement;
+                document.getElementById('current-announcement').style.display = 'block';
+                document.getElementById('announcement-form').style.display = 'none';
+            } else {
+                document.getElementById('current-announcement').style.display = 'none';
+                document.getElementById('announcement-form').style.display = 'block';
+            }
+        }
+
+        function editAnnouncement() {
+            const announcement = JSON.parse(localStorage.getItem('announcements') || '""');
+            document.getElementById('announcement').value = announcement;
+            document.getElementById('current-announcement').style.display = 'none';
+            document.getElementById('announcement-form').style.display = 'block';
+        }
+
+        function clearAnnouncement() {
+            if (confirm('Are you sure you want to clear the current announcement?')) {
+                localStorage.removeItem('announcements');
+                document.getElementById('announcement').value = '';
+                loadCurrentAnnouncement();
+            }
+        }
+
+        function postAnnouncement() {
+            const announcement = document.getElementById('announcement').value.trim();
+            if (!announcement) {
+                alert('Please enter an announcement message');
+                return;
+            }
+            
+            // Save announcement to localStorage
+            localStorage.setItem('announcements', JSON.stringify(announcement));
+            
+            // Show success modal
+            document.getElementById('announcement-modal').style.display = 'block';
+            
+            // Update the display
+            loadCurrentAnnouncement();
+        }
+
+        function closeAnnouncementModal() {
+            document.getElementById('announcement-modal').style.display = 'none';
+        }
+
+        // Initialize announcements on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCurrentAnnouncement();
+            renderStoreLocations();
+        });
+        </script>
+        <div class="admin-section admin-section-margin">
+            <label for="category">Manage Categories:</label>
+            <input type="text" id="category" placeholder="Add new category...">
+            <button onclick="addCategory()">Add Category</button>
+            <ul id="category-list" class="category-list"></ul>
+            <div id="items-panel" class="items-panel"></div>
+        </div>
+        <script>
+        function getCategories() {
+            return JSON.parse(localStorage.getItem('categories') || '["Food", "Electronics"]');
+        }
+        function setCategories(cats) {
+            localStorage.setItem('categories', JSON.stringify(cats));
+            renderCategories();
+            renderItemsPanel();
+        }
+        function getItems(cat) {
+            return JSON.parse(localStorage.getItem('items_' + cat) || '[]');
+        }
+        function setItems(cat, items, skipRender) {
+            localStorage.setItem('items_' + cat, JSON.stringify(items));
+            if (!skipRender) renderItemsPanel();
+        }
+        function addCategory() {
+            const input = document.getElementById('category');
+            let cats = getCategories();
+            const val = input.value.trim();
+            if (val && !cats.includes(val)) {
+                cats.push(val);
+                setCategories(cats);
+                input.value = '';
+            }
+        }
+        function deleteCategory(cat) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'block';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <span class="modal-close" onclick="this.parentElement.parentElement.remove()">&times;</span>
+                    <h3 class="modal-title">Confirm Deletion</h3>
+                    <p class="warning-text">
+                        <i class="fas fa-exclamation-triangle icon-margin"></i>
+                        Are you sure you want to delete the category "${cat}" and all its items?
+                    </p>
+                    <div class="button-group">
+                        <button class="primary-btn" onclick="confirmDeleteCategory('${cat}')">Yes, Delete Category</button>
+                        <button class="secondary-btn" onclick="this.parentElement.parentElement.parentElement.remove()">Cancel</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function confirmDeleteCategory(cat) {
+            let cats = getCategories();
+            cats = cats.filter(c => c !== cat);
+            setCategories(cats);
+            localStorage.removeItem('items_' + cat);
+            document.querySelector('.modal').remove();
+        }
+        function renderCategories() {
+            const cats = getCategories();
+            const list = document.getElementById('category-list');
+            list.innerHTML = '';
+            cats.forEach(cat => {
+                const li = document.createElement('li');
+                li.style.marginBottom = '8px';
+                li.innerHTML = `<span>${cat}</span> <button style='margin-left:12px; background:#e53935; color:#fff; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;' onclick='deleteCategory("${cat}")'>Delete</button>`;
+                list.appendChild(li);
+            });
+        }
+        function renderItemsPanel() {
+            const cats = getCategories();
+            const panel = document.getElementById('items-panel');
+            panel.innerHTML = '';
+            cats.forEach(cat => {
+                const div = document.createElement('div');
+                div.style.marginBottom = '24px';
+                div.innerHTML = `<strong>${cat} Items:</strong><br>
+                    <input type='text' id='item-input-${cat}' placeholder='Add item to ${cat}...'>
+                    <div id='prices-container-${cat}' class='prices-container'>
+                        <label>Price Options:</label>
+                        <div class='price-input-group'>
+                            <input type='number' class='price-input' placeholder='Price in Ksh'>
+                            <input type='text' class='price-desc' placeholder='Description (e.g. Small, Medium, Large)'>
+                            <button type='button' onclick='addPriceField("${cat}")'>+ Add Price</button>
+                        </div>
+                    </div>
+                    <input type='text' id='item-wa-${cat}' placeholder='WhatsApp number (e.g. 254700000000)'>
+                    <input type='text' id='item-call-${cat}' placeholder='Call number (e.g. 254700000000)'>
+                    <input type='file' id='item-img-${cat}' accept='image/*' multiple style='margin-top:6px;'>
+                    <button onclick='addItem("${cat}")'>Add</button>
+                    <ul id='item-list-${cat}' style='list-style:none; padding:0; margin-top:8px;'></ul>`;
+                panel.appendChild(div);
+                renderItemsList(cat);
+            });
+        }
+        function addItem(cat) {
+            const input = document.getElementById('item-input-' + cat);
+            const waInput = document.getElementById('item-wa-' + cat);
+            const callInput = document.getElementById('item-call-' + cat);
+            const imgInput = document.getElementById('item-img-' + cat);
+            let items = getItems(cat);
+            const val = input.value.trim();
+            const waNum = waInput.value.trim();
+            const callNum = callInput.value.trim();
+
+            // Validate item name
+            if (!val) {
+                alert('Please enter an item name.');
+                return;
+            }
+
+            // Check for duplicate item
+            if (items.some(i => i.name === val)) {
+                alert('An item with this name already exists.');
+                return;
+            }
+
+            // Collect price options
+            const priceOptions = [];
+            document.querySelectorAll(`#prices-container-${cat} .price-input-group`).forEach(group => {
+                const priceInput = group.querySelector('.price-input');
+                const descInput = group.querySelector('.price-desc');
+                if (priceInput && descInput) {
+                    const price = priceInput.value.trim();
+                    const desc = descInput.value.trim();
+                    if (price && desc) {
+                        priceOptions.push({ price: Number(price), description: desc });
+                    }
+                }
+            });
+
+            // Get valid price options (non-empty values only)
+            const validPriceOptions = priceOptions.filter(option => 
+                option.price && option.description && option.price > 0
+            );
+
+            // Validate price options
+            if (validPriceOptions.length === 0) {
+                alert('Please add at least one valid price option before saving.');
+                return;
+            }
+
+            const files = Array.from(imgInput.files).slice(0, 7);
+            if (val && !items.some(i => i.name === val)) {
+                // Collect and validate price options first
+                if (!priceOptions.length) {
+                    alert('Please add at least one price option for the item.');
+                    return;
+                }
+
+                if (files.length > 0) {
+                    let images = [];
+                    let loaded = 0;
+                    files.forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            images.push(e.target.result);
+                            loaded++;
+                            if (loaded === files.length) {
+                                const newItem = { 
+                                    name: val, 
+                                    priceOptions: priceOptions.sort((a, b) => a.price - b.price), // Sort by price
+                                    whatsapp: waNum, 
+                                    call: callNum, 
+                                    images 
+                                };
+                                items.push(newItem);
+                                setItems(cat, items);
+                                
+                                // Reset the form
+                                input.value = '';
+                                document.getElementById(`prices-container-${cat}`).innerHTML = `
+                                    <label>Price Options:</label>
+                                    <div class='price-input-group' style='margin-top:6px;'>
+                                        <input type='number' class='price-input' placeholder='Price in Ksh'>
+                                        <input type='text' class='price-desc' placeholder='Description (e.g. Small, Medium, Large)' style='margin-left:4px;'>
+                                        <button type='button' onclick='addPriceField("${cat}")' style='margin-left:4px;'>+ Add Price</button>
+                                    </div>
+                                `;
+                                waInput.value = '';
+                                callInput.value = '';
+                                imgInput.value = '';
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                } else {
+                    items.push({ name: val, whatsapp: waNum, call: callNum, images: [] });
+                    setItems(cat, items);
+                    input.value = '';
+                    waInput.value = '';
+                    callInput.value = '';
+                    imgInput.value = '';
+                }
+            }
+        }
+        function renderItemsList(cat) {
+            const items = getItems(cat);
+            const list = document.getElementById('item-list-' + cat);
+            if (!list) return;
+            list.innerHTML = '';
+            items.forEach((item, idx) => {
+                const li = document.createElement('li');
+                li.style.marginBottom = '6px';
+                let imgHtml = '';
+                if (item.images && item.images.length) {
+                    imgHtml = item.images.map((img, imgIdx) => `<img src='${img}' alt='${item.name}' style='height:32px; width:32px; object-fit:cover; border-radius:6px; margin-right:4px;'>`).join('');
+                }
+                let addImgBtn = '';
+                if ((item.images ? item.images.length : 0) < 7 && !item._editing) {
+                    addImgBtn = `<button style='margin-left:6px; background:#43e97b; color:#fff; border:none; border-radius:4px; padding:2px 8px; cursor:pointer;' onclick='addImageToItem("${cat}", ${idx})'>Add Image</button>`;
+                }
+                if (item._editing) {
+                    // Create price options HTML
+                    const priceOptionsHtml = (item.priceOptions || []).map((option, i) => `
+                        <div class='price-input-group'>
+                            <input type='number' class='price-input edit-price-${cat}-${idx}' value='${option.price}' placeholder='Price in Ksh'>
+                            <input type='text' class='price-desc edit-desc-${cat}-${idx}' value='${option.description}' placeholder='Description'>
+                            <button type='button' class='remove-price' onclick='this.parentElement.remove()'>Remove</button>
+                        </div>
+                    `).join('') + `
+                        <div class='price-input-group'>
+                            <input type='number' class='price-input edit-price-${cat}-${idx}' placeholder='New price in Ksh'>
+                            <input type='text' class='price-desc edit-desc-${cat}-${idx}' placeholder='New description'>
+                            <button type='button' onclick='addEditPriceField("${cat}", ${idx})'>+ Add Price</button>
+                        </div>
+                    `;
+
+                    li.innerHTML = `
+                        <div class="form-section">
+                            <div class="section-title">Edit Item</div>
+                            <div class="form-group">
+                                <label for="edit-name-${cat}-${idx}">Item Name:</label>
+                                <input type='text' value='${item.name}' id='edit-name-${cat}-${idx}'>
+                            </div>
+                            
+                            <div class="form-group">
+                                ${imgHtml ? `
+                                    <div class="current-images" style="margin-bottom: 15px;">
+                                        <label>Current Images:</label>
+                                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                            ${imgHtml}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                <label for="edit-img-${cat}-${idx}">Add Images:</label>
+                                <input type='file' id='edit-img-${cat}-${idx}' accept='image/*' multiple>
+                            </div>
+
+                            <div id='edit-prices-${cat}-${idx}' class='prices-container'>
+                                <label>Price Options:</label>
+                                ${priceOptionsHtml}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit-wa-${cat}-${idx}">Contact Information:</label>
+                                <div style="display: flex; gap: 15px;">
+                                    <div style="flex: 1;">
+                                        <input type='text' value='${item.whatsapp || ''}' id='edit-wa-${cat}-${idx}' placeholder="WhatsApp number">
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <input type='text' value='${item.call || ''}' id='edit-call-${cat}-${idx}' placeholder="Call number">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                                <button style='background:#e53935; color:#fff; border:none; border-radius:6px; padding:12px 20px; cursor:pointer; font-weight: 600;' onclick='cancelEditItem("${cat}", ${idx})'>Cancel</button>
+                                <button style='background:#388e3c; color:#fff; border:none; border-radius:6px; padding:12px 20px; cursor:pointer; font-weight: 600;' onclick='updateItem("${cat}", ${idx})'>Update</button>
+                            </div>
+                        </div>`;
+                } else {
+                    const priceDisplay = item.priceOptions && item.priceOptions.length > 0 
+                        ? `<div style="margin: 5px 0; color: #388e3c;">Prices:<br/>${item.priceOptions
+                            .sort((a, b) => a.price - b.price)
+                            .map(p => `• ${p.description}: Ksh ${p.price}`)
+                            .join('<br/>')}</div>`
+                        : '<div style="color: #e53935;">No price options set</div>';
+                    li.innerHTML = `${imgHtml}<span>${item.name}</span> <span style='color:#388e3c; font-size:0.95em;'>${priceDisplay} | WhatsApp: ${item.whatsapp || '-'} | Call: ${item.call || '-'}</span> 
+                        <button style='margin-left:10px; background:#e53935; color:#fff; border:none; border-radius:4px; padding:2px 8px; cursor:pointer;' onclick='deleteItem("${cat}", "${item.name}")'>Delete</button>
+                        <button style='margin-left:6px; background:#1565c0; color:#fff; border:none; border-radius:4px; padding:2px 8px; cursor:pointer;' onclick='editItemPrompt("${cat}", ${idx})'>Edit</button>
+                        ${addImgBtn}`;
+                }
+                list.appendChild(li);
+            });
+        }
+        function editItemPrompt(cat, idx) {
+            let items = getItems(cat);
+            items[idx]._editing = true;
+            setItems(cat, items, true); // true disables rerender
+            renderItemsList(cat);
+        }
+        function cancelEditItem(cat, idx) {
+            let items = getItems(cat);
+            delete items[idx]._editing;
+            setItems(cat, items, true);
+            renderItemsList(cat);
+        }
+        function updateItem(cat, idx) {
+            console.log('Updating item for category:', cat, 'index:', idx); // Debug log
+            
+            let items = getItems(cat);
+            const name = document.getElementById(`edit-name-${cat}-${idx}`).value.trim();
+            const whatsapp = document.getElementById(`edit-wa-${cat}-${idx}`).value.trim();
+            const call = document.getElementById(`edit-call-${cat}-${idx}`).value.trim();
+            const imgInput = document.getElementById(`edit-img-${cat}-${idx}`);
+
+            if (!name) {
+                alert('Please enter an item name');
+                return;
+            }
+
+            // Collect price options
+            const priceOptions = [];
+            const priceGroups = document.querySelectorAll(`#edit-prices-${cat}-${idx} .price-input-group`);
+            console.log('Found price groups:', priceGroups.length); // Debug log
+
+            priceGroups.forEach((group, i) => {
+                const priceInput = group.querySelector('.price-input');
+                const descInput = group.querySelector('.price-desc');
+                
+                if (priceInput && descInput) {
+                    const price = priceInput.value.trim();
+                    const desc = descInput.value.trim();
+                    console.log('Price option:', i, 'price:', price, 'desc:', desc); // Debug log
+                    
+                    if (price && desc && Number(price) > 0) {
+                        priceOptions.push({ price: Number(price), description: desc });
+                    }
+                }
+            });
+
+            // Get valid price options (non-empty values only)
+            const validPriceOptions = priceOptions.filter(option => 
+                option.price && option.description && option.price > 0
+            );
+
+            // Check if we have any valid price options
+            console.log('Valid price options:', priceOptions.length); // Debug log
+            
+            if (priceOptions.length === 0) {
+                alert('Please add at least one valid price option with both price and description');
+                return;
+            }
+
+            // Sort price options by price
+            priceOptions.sort((a, b) => a.price - b.price);
+
+            let images = items[idx].images || [];
+            // Handle image updates
+            if (imgInput.files && imgInput.files.length > 0) {
+                const files = Array.from(imgInput.files).slice(0, 7);
+                let newImages = [];
+                let loaded = 0;
+
+                // Create a promise to handle image loading
+                const imagePromises = files.map(file => {
+                    return new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            newImages.push(e.target.result);
+                            resolve();
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                });
+
+                // Wait for all images to load then update the item
+                Promise.all(imagePromises).then(() => {
+                    console.log('Saving item with new images'); // Debug log
+                    items[idx] = { 
+                        name, 
+                        priceOptions,
+                        whatsapp, 
+                        call, 
+                        images: newImages 
+                    };
+                    delete items[idx]._editing;
+                    setItems(cat, items);
+                    renderItemsList(cat);
+                    alert('Item updated successfully!');
+                });
+            } else {
+                console.log('Saving item without new images'); // Debug log
+                items[idx] = { 
+                    name, 
+                    priceOptions,
+                    whatsapp, 
+                    call, 
+                    images 
+                };
+                delete items[idx]._editing;
+                setItems(cat, items);
+                renderItemsList(cat);
+                alert('Item updated successfully!');
+            }
+        }
+        function addPriceField(cat) {
+            const container = document.getElementById(`prices-container-${cat}`);
+            const div = document.createElement('div');
+            div.className = 'price-input-group';
+            div.innerHTML = `
+                <input type='number' class='price-input' placeholder='Price in Ksh' min="0" step="1" required>
+                <input type='text' class='price-desc' placeholder='Description (e.g. Small, Medium, Large)' required>
+                <button type='button' class='remove-price' onclick='removePriceField(this)'>Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removePriceField(button) {
+            const group = button.parentElement;
+            const container = group.parentElement;
+            
+            // Keep at least one price field
+            if (container.querySelectorAll('.price-input-group').length > 1) {
+                group.remove();
+            } else {
+                alert('You must keep at least one price option.');
+            }
+        }
+
+        function addEditPriceField(cat, idx) {
+            const container = document.getElementById(`edit-prices-${cat}-${idx}`);
+            const div = document.createElement('div');
+            div.className = 'price-input-group';
+            div.innerHTML = `
+                <input type='number' class='price-input edit-price-${cat}-${idx}' placeholder='Price in Ksh'>
+                <input type='text' class='price-desc edit-desc-${cat}-${idx}' placeholder='Description'>
+                <button type='button' class='remove-price' onclick='this.parentElement.remove()'>Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function getPriceOptions(cat) {
+            const container = document.getElementById(`prices-container-${cat}`);
+            const prices = [];
+            container.querySelectorAll('.price-input-group').forEach(group => {
+                const priceInput = group.querySelector('.price-input');
+                const descInput = group.querySelector('.price-desc');
+                if (priceInput && descInput) {
+                    const price = priceInput.value.trim();
+                    const desc = descInput.value.trim();
+                    if (price && desc && Number(price) > 0) {
+                        prices.push({ price: Number(price), description: desc });
+                    }
+                }
+            });
+            return prices;
+        }
+
+        function addImageToItem(cat, idx) {
+            let items = getItems(cat);
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.onchange = function() {
+                const file = fileInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        if (!items[idx].images) items[idx].images = [];
+                        if (items[idx].images.length < 7) {
+                            items[idx].images.push(e.target.result);
+                            setItems(cat, items);
+                            renderItemsList(cat);
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            fileInput.click();
+        }
+        renderCategories();
+        renderItemsPanel();
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'categories' || (e.key && e.key.startsWith('items_'))) {
+                renderCategories();
+                renderItemsPanel();
+            }
+        });
+
+        // Chatbot functionality
+        const chatbotResponses = {
+            greetings: [
+                "Hello! How can I help you with the admin panel today?",
+                "Hi! Need help navigating the admin panel?",
+                "Welcome! What would you like to know about the admin panel?"
+            ],
+            locations: [
+                "To manage store locations:\n1. Find the 'Store Locations' section\n2. Fill in the location details\n3. Click 'Add Location' to save\n4. Use Edit/Delete buttons to modify existing locations"
+            ],
+            announcements: [
+                "To manage announcements:\n1. Find the 'Store Announcements' section\n2. Type your announcement\n3. Click 'Publish' to make it live\n4. Use Edit/Clear to modify or remove"
+            ],
+            categories: [
+                "To manage product categories:\n1. Go to 'Manage Categories' section\n2. Add new categories using the input field\n3. Click 'Add Category'\n4. Use Delete button to remove categories"
+            ],
+            items: [
+                "To manage items:\n1. Find your category's item section\n2. Fill in item details (name, prices, contacts)\n3. Add images if needed\n4. Click 'Add' to save\n5. Use Edit/Delete to modify items"
+            ],
+            help: [
+                "I can help you with:\n- Managing store locations\n- Creating announcements\n- Managing categories\n- Adding/editing items\n\nWhat would you like to know about?"
+            ]
+        };
+
+        function toggleChatbot() {
+            const chatbot = document.getElementById('chatbot');
+            if (chatbot.style.display === 'flex') {
+                chatbot.style.display = 'none';
+            } else {
+                chatbot.style.display = 'flex';
+                if (!chatbot.hasAttribute('data-initialized')) {
+                    addBotMessage(chatbotResponses.greetings[Math.floor(Math.random() * chatbotResponses.greetings.length)]);
+                    chatbot.setAttribute('data-initialized', 'true');
+                }
+            }
+        }
+
+        function addBotMessage(message) {
+            const messages = document.getElementById('chatbot-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message bot';
+            messageDiv.textContent = message;
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function addUserMessage(message) {
+            const messages = document.getElementById('chatbot-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message user';
+            messageDiv.textContent = message;
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function handleChatInput(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatbot-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            addUserMessage(message);
+            input.value = '';
+
+            // Process the message and get response
+            const response = getChatbotResponse(message.toLowerCase());
+            setTimeout(() => addBotMessage(response), 500);
+        }
+
+        function getChatbotResponse(message) {
+            // First check for help command
+            if (message === 'help') {
+                return chatbotResponses.help[0];
+            }
+
+            // Process the user's message directly
+            let response = "I'll help you with that. ";
+
+            // Add relevant context based on the message content
+            if (message.includes('location')) {
+                response += "You can find the locations section at the top of the admin panel.";
+            } else if (message.includes('announcement')) {
+                response += "The announcements section is below the locations section.";
+            } else if (message.includes('category') || message.includes('item')) {
+                response += "The categories and items section is at the bottom of the admin panel.";
+            }
+
+            // If no specific context was added, just acknowledge
+            if (response === "I'll help you with that. ") {
+                response = "I understand your request. Please go ahead with what you'd like to do, and I'm here if you need specific guidance.";
+            }
+
+            return response;
+        }
+        </script>
+    </div>
+    <div class="footer">&copy; 2025 Ochola Superstore. Admin Panel.</div>
+    
+    <!-- Chatbot -->
+    <button class="chatbot-button" onclick="toggleChatbot()" title="Open Admin Chatbot">
+    <i class="fas fa-comments" style="font-size: 2em;"></i>
+    </button>
+    <div id="chatbot" class="chatbot-window">
+        <div class="chatbot-header">
+            <span>Admin Chatbot</span>
+            <button class="modal-close" onclick="toggleChatbot()">&times;</button>
+        </div>
+        <div id="chatbot-messages" class="chatbot-messages"></div>
+        <div class="chatbot-input">
+            <input type="text" id="chatbot-input" placeholder="Type your message..." onkeypress="handleChatInput(event)">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+</body>
+</html>

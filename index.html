@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ochola Superstore</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+    .modal-header {
+        .services-description {
+            margin-bottom: 0;
+            color: #388e3c;
+            font-size: 1.08em;
+        }
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-back-btn {
+            background: #e0e0e0;
+            color: #1565c0;
+            font-weight: 600;
+            border: none;
+            padding: 6px 18px;
+            border-radius: 8px;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+        #contact-section {
+            margin-bottom: 0;
+        }
+        .store-description {
+            margin-bottom: 28px;
+            color: #1565c0;
+            font-size: 1.13em;
+            font-weight: 500;
+        }
+        #selected-location-info {
+            margin-top: 16px;
+        }
+        #contact-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 12px;
+        }
+        .contact-desc {
+            color: #666;
+            font-size: 1em;
+            margin-top: 8px;
+        }
+        /* Screen reader only text */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            border: 0;
+        }
+        #selected-location-info {
+            margin-top: 16px;
+        }
+        /* Debug locations style moved from inline */
+        #debug-locations {
+            color: #e53935;
+            font-size: 0.95em;
+            margin-bottom: 8px;
+        }
+
+        /* Chatbot Styles */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            font-family: Arial, sans-serif;
+        }
+
+        .chatbot-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            border: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+
+        .chatbot-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .chatbot-box {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 300px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: none;
+            overflow: hidden;
+        }
+
+        .chatbot-box.active {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-header span {
+            font-weight: bold;
+        }
+
+        .chatbot-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .chatbot-messages {
+            height: 300px;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .chatbot-message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 15px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background: #f0f0f0;
+            margin-left: auto;
+        }
+
+        .bot-message {
+            background: #e3f2fd;
+            margin-right: auto;
+        }
+
+        .chatbot-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .chatbot-input input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            margin-right: 8px;
+            outline: none;
+        }
+
+        .chatbot-input input:focus {
+            border-color: #43e97b;
+        }
+
+        .chatbot-send {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        body {
+            background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        /* Announcement Styles */
+        .announcement-banner {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+            padding: 12px 20px;
+            margin: 20px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            font-size: 1.1em;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .announcement-text {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+            padding-left: 100%;
+        }
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-200%);
+            }
+        }
+        .announcement-banner:hover .announcement-text {
+            animation-play-state: paused;
+        }
+        /* Store Locations Styles */
+        .locations-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .location-title {
+            color: #1565c0;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .location-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .location-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+        }
+        .location-name {
+            color: #388e3c;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .location-info {
+            color: #666;
+            margin: 8px 0;
+            font-size: 1.1em;
+        }
+        .location-contact {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .location-contact a {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        .location-contact a i {
+            margin-right: 8px;
+        }
+        .location-contact a:hover {
+            transform: translateY(-2px);
+        }
+        .whatsapp-btn {
+            background: #25D366;
+        }
+        .call-btn {
+            background: #1565c0;
+        }
+        .maps-btn {
+            background: #DB4437;
+        }
+        .header {
+            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 40%, #f6d365 100%);
+            color: #fff;
+            padding: 32px 0 18px 0;
+            font-size: 2.5em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 24px rgba(44,62,80,0.18);
+        }
+        /* Announcement Styles */
+        .announcement-banner {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            animation: slideDown 0.5s ease-out;
+        }
+        @keyframes slideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        /* Store Locations Styles */
+        .locations-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .location-title {
+            color: #1565c0;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .location-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .location-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+        }
+        .location-name {
+            color: #388e3c;
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .location-info {
+            color: #666;
+            margin: 5px 0;
+        }
+        .location-contact a {
+            display: inline-block;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 20px;
+            text-decoration: none;
+            color: white;
+            transition: transform 0.2s;
+        }
+        .location-contact a:hover {
+            transform: translateY(-2px);
+        }
+        .whatsapp-btn {
+            background: #25D366;
+        }
+        .call-btn {
+            background: #1565c0;
+        }
+        .maps-btn {
+            background: #DB4437;
+        }
+        .header::after {
+            content: '';
+            display: block;
+            position: absolute;
+            left: 50%;
+            bottom: -18px;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 18px;
+            background: radial-gradient(circle, #fda085 60%, transparent 100%);
+            border-radius: 0 0 24px 24px;
+            opacity: 0.7;
+        }
+        .footer {
+            background: linear-gradient(90deg, #fda085 0%, #43e97b 100%);
+            color: #fff;
+            text-align: center;
+            padding: 22px 0 16px 0;
+            font-size: 1.1em;
+            border-radius: 24px 24px 0 0;
+            margin-top: 48px;
+            box-shadow: 0 -2px 12px rgba(44,62,80,0.10);
+        }
+        .container {
+            max-width: 650px;
+            margin: 48px auto;
+            background: linear-gradient(135deg, #fffde4 60%, #f6d365 100%);
+            padding: 48px 36px 36px 36px;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(44, 62, 80, 0.18);
+            text-align: center;
+            position: relative;
+        }
+        .store-logo {
+            box-shadow: 0 6px 32px rgba(44,62,80,0.18);
+            background: linear-gradient(135deg, #43e97b 0%, #fda085 100%);
+        }
+        .decor, .decor2 {
+            position: absolute;
+            z-index: 0;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+        .decor {
+            top: -40px;
+            left: -40px;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, #fda085 60%, transparent 100%);
+        }
+        .decor2 {
+            bottom: -40px;
+            right: -40px;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, #43e97b 60%, transparent 100%);
+        }
+        .card {
+            background: linear-gradient(120deg, #fffde4 60%, #f6d365 100%);
+            border-radius: 18px;
+            box-shadow: 0 2px 16px rgba(44,62,80,0.10);
+            padding: 28px 20px;
+            margin-bottom: 28px;
+            transition: box-shadow 0.2s, background 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 8px 32px rgba(44,62,80,0.18);
+            background: linear-gradient(120deg, #fda085 60%, #fffde4 100%);
+        }
+        .nav-btn, .whatsapp-btn, .admin-btn, .location-btn, .location-map-btn {
+            font-size: 1.15em;
+            padding: 16px 0;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(44,62,80,0.10);
+            margin-bottom: 12px;
+            border: none;
+            font-weight: 600;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .nav-btn {
+            background: linear-gradient(90deg, #43e97b 0%, #fda085 100%);
+            color: #fff;
+        }
+        .nav-btn:hover {
+            background: linear-gradient(90deg, #fda085 0%, #43e97b 100%);
+            transform: translateY(-2px) scale(1.04);
+        }
+        .whatsapp-btn {
+            background: linear-gradient(90deg, #25D366 0%, #43e97b 100%);
+            color: #fff;
+        }
+        .whatsapp-icon, .call-icon {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+        .admin-btn {
+            background: linear-gradient(90deg, #1565c0 0%, #43e97b 100%);
+            color: #fff;
+        }
+        .location-btn, .location-map-btn {
+            background: linear-gradient(90deg, #388e3c 0%, #fda085 100%);
+            color: #fff;
+        }
+        .shop-categories-title, .contact-title, .admin-title {
+            font-size: 1.35em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1565c0;
+            letter-spacing: 1px;
+        }
+        .subtitle {
+            font-size: 1.18em;
+            color: #388e3c;
+            margin-bottom: 36px;
+        }
+        .item-order-btns button {
+            margin-right: 10px;
+        }
+        .item-order-btns button:last-child {
+            margin-right: 0;
+        }
+        .item-image-modal-img {
+            box-shadow: 0 8px 32px rgba(44,62,80,0.18);
+        }
+        .location-modal-desc {
+            font-size: 1.12em;
+            color: #388e3c;
+            margin-top: 14px;
+        }
+        .product-modal-content {
+            border-radius: 24px;
+        }
+        .amount-section {
+            margin-bottom: 16px;
+        }
+        #preset-amount {
+            color: #388e3c;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        #preset-amount:empty {
+            display: none;
+        }
+        .features .section {
+            margin-bottom: 36px;
+        }
+        .item-order-btn-desc {
+            font-size: 1em;
+            color: #1565c0;
+            margin-top: 10px;
+        }
+        .store-title {
+            color: #fda085;
+            font-size: 1.3em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(44,62,80,0.08);
+        }
+        .item-order-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-bottom: 15px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .item-order-input:focus {
+            outline: none;
+            border-color: #43e97b;
+            box-shadow: 0 0 0 3px rgba(67, 233, 123, 0.2);
+        }
+        .item-order-label {
+            display: block;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #1565c0;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+        body {
+            background: linear-gradient(135deg, #e0f7fa 0%, #fffde4 100%);
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+            color: #fff;
+            padding: 24px 0 12px 0;
+            font-size: 2.2em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            box-shadow: 0 2px 12px rgba(44,62,80,0.10);
+            border-radius: 0 0 18px 18px;
+        }
+        .footer {
+            background: #1565c0;
+            color: #fff;
+            text-align: center;
+            padding: 18px 0 12px 0;
+            font-size: 1em;
+            border-radius: 18px 18px 0 0;
+            margin-top: 40px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 2px 16px rgba(44,62,80,0.10);
+            padding: 24px 18px;
+            margin-bottom: 24px;
+            transition: box-shadow 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 4px 24px rgba(44,62,80,0.18);
+        }
+        .nav-btn, .whatsapp-btn, .admin-btn, .location-btn, .location-map-btn {
+            font-size: 1.1em;
+            padding: 14px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(44,62,80,0.08);
+            margin-bottom: 10px;
+        }
+        .nav-btn {
+            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+            color: #fff;
+            font-weight: 600;
+        }
+        .nav-btn:hover {
+            background: linear-gradient(90deg, #38f9d7 0%, #43e97b 100%);
+            transform: translateY(-2px) scale(1.03);
+        }
+        .whatsapp-btn {
+            background: #25D366;
+            color: #fff;
+        }
+        .admin-btn {
+            background: #1565c0;
+            color: #fff;
+        }
+        .location-btn, .location-map-btn {
+            background: #388e3c;
+            color: #fff;
+        }
+        .store-logo {
+            box-shadow: 0 4px 24px rgba(44,62,80,0.18);
+        }
+        .features .section {
+            margin-bottom: 32px;
+        }
+        .shop-categories-title, .contact-title, .admin-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 18px;
+            color: #1565c0;
+        }
+        .subtitle {
+            font-size: 1.15em;
+            color: #388e3c;
+            margin-bottom: 32px;
+        }
+        .item-order-btns button {
+            margin-right: 8px;
+        }
+        .item-order-btns button:last-child {
+            margin-right: 0;
+        }
+        .item-image-modal-img {
+            box-shadow: 0 4px 24px rgba(44,62,80,0.18);
+        }
+        .location-modal-desc {
+            font-size: 1.1em;
+            color: #388e3c;
+            margin-top: 12px;
+        }
+        .product-modal-content {
+            border-radius: 18px;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa 0%, #fffde4 100%);
+            margin: 0;
+        }
+        .container {
+            max-width: 520px;
+            margin: 60px auto;
+            background: #fff;
+            padding: 40px 32px 32px 32px;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(44, 62, 80, 0.12);
+            text-align: center;
+            position: relative;
+        }
+        .store-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: -70px auto 24px auto;
+            box-shadow: 0 2px 12px rgba(44, 62, 80, 0.10);
+        }
+        .store-logo svg {
+            width: 48px;
+            height: 48px;
+        }
+        h1 {
+            color: #1565c0;
+            margin-bottom: 18px;
+            font-size: 2.2em;
+            letter-spacing: 1px;
+            font-weight: 700;
+            text-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+        }
+        .subtitle {
+            color: #388e3c;
+            font-size: 1.1em;
+            margin-bottom: 28px;
+            font-style: italic;
+        }
+        .nav-btn {
+            display: block;
+            width: 100%;
+            margin: 18px 0;
+            padding: 16px;
+            font-size: 19px;
+            background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+            transition: background 0.3s, transform 0.2s;
+        }
+        .nav-btn:hover {
+            background: linear-gradient(90deg, #38f9d7 0%, #43e97b 100%);
+            transform: translateY(-2px) scale(1.03);
+        }
+        .decor {
+            position: absolute;
+            top: -30px;
+            left: -30px;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #43e97b33 60%, transparent 100%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        .decor2 {
+            position: absolute;
+            bottom: -30px;
+            right: -30px;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #1565c033 60%, transparent 100%);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        .products-dropdown {
+            display: none;
+            position: absolute;
+            background: #fffde4;
+            border: 1px solid #388e3c;
+            border-radius: 8px;
+            margin: 8px 0;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+            z-index: 10;
+            width: calc(100% - 20px);
+            left: 10px;
+        }
+        .products-dropdown div {
+            padding: 6px 0;
+            color: #388e3c;
+        }
+        .product-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .product-modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .product-modal-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .product-modal-close:hover,
+        .product-modal-close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .admin-access {
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        .admin-text {
+            cursor: pointer;
+            text-decoration: underline;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        .admin-text:hover {
+            opacity: 1;
+        }
+        #admin-password-modal .product-modal-content,
+        .admin-password-modal-content {
+            max-width: 300px;
+        }
+        #admin-password {
+            margin: 15px 0;
+            width: 100%;
+        }
+
+    </style>
+    <link rel="stylesheet" href="styles.css">
+    <script src="chatbot.js" defer></script>
+</head>
+<body>
+    <div class="header">Ochola Superstore</div>
+    <div class="container">
+        <div class="decor"></div>
+        <div class="decor2"></div>
+        <div class="store-logo column-padding">
+            <svg width="60" height="60" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="40" cy="40" r="38" fill="#43e97b" stroke="#388e3c" stroke-width="4"/>
+              <ellipse cx="40" cy="54" rx="18" ry="10" fill="#fff" fill-opacity="0.8"/>
+              <rect x="28" y="38" width="24" height="14" rx="7" fill="#388e3c"/>
+              <path d="M40 38 L40 30" stroke="#388e3c" stroke-width="3" stroke-linecap="round"/>
+              <ellipse cx="40" cy="28" rx="5" ry="3" fill="#fffde4"/>
+              <path d="M35 32 Q40 24 45 32" stroke="#388e3c" stroke-width="2" fill="none"/>
+            </svg>
+            <span class="store-title">Ochola</span>
+        </div>
+    <h1>Ochola Superstore</h1>
+        <div class="subtitle">Fresh food & quality products for everyone</div>
+    <div class="store-description">
+            Ochola Superstore makes it effortless to order products, access a variety of services, and connect directly with sellers. With just a click, you can reach your desired items, request services, and communicate instantly with our team for a seamless shopping experience.
+        </div>
+        <div class="features">
+            <!-- Services Section -->
+            <div class="section card">
+                <h2 class="shop-categories-title">Our Services</h2>
+                <div class="services-description">
+                    In addition to food and products, Ochola Superstore offers a range of services to meet your needs. Whether you require delivery, catering, event support, or other assistance, our team is ready to help. Please contact us or select your location to view available services.
+                </div>
+            </div>
+            <!-- Announcements Section -->
+            <div class="section card">
+                <h2 class="announcement-title">Latest Announcements</h2>
+                <div id="announcements" class="announcements-container">
+                    <!-- Announcements will be loaded here -->
+                </div>
+            </div>
+            
+            <div class="section card">
+                <h2 class="shop-categories-title">Shop Categories</h2>
+                <div id="categories"></div>
+                <div id="debug-locations"></div>
+
+            <!-- ...existing code... -->
+            
+            <div class="section section-margin card">
+                <h2 class="locations-title">Store Locations</h2>
+                <div id="selected-location-info"></div>
+                <label for="location-select">Choose your location:</label>
+                <select id="location-select" class="item-order-input"></select>
+                <div id="selected-location-info"></div>
+            </div>
+        </div>
+    <div id="product-modal" class="product-modal">
+            <div class="product-modal-content">
+                <div class="modal-header">
+                    <button class="nav-btn modal-back-btn" id="product-modal-back">Back</button>
+                </div>
+                <h3 id="product-modal-title"></h3>
+                <div id="product-modal-list"></div>
+            </div>
+        </div>
+    <div id="item-order-modal" class="product-modal">
+            <div class="product-modal-content">
+                <div class="modal-header">
+                    <button class="nav-btn modal-back-btn" id="item-order-modal-back">Back</button>
+                </div>
+                <h3 id="item-order-title"></h3>
+                <form id="item-order-form">
+                    <div class="price-selection">
+                        <label for="price-options" class="item-order-label">Select Price Option:</label>
+                        <select id="price-options" class="item-order-input" onchange="handlePriceSelection(this.value)">
+                            <option value="">Choose a price option...</option>
+                        </select>
+                    </div>
+                    <div id="custom-price" class="hidden">
+                        <label for="item-order-amount" class="item-order-label">Enter Custom Amount (Ksh):</label>
+                        <input type="number" id="item-order-amount" min="1" class="item-order-input">
+                    </div>
+                    <label for="item-order-desc" class="item-order-label">Description:</label>
+                    <textarea id="item-order-desc" rows="3" required class="item-order-input"></textarea>
+                    <div class="item-order-btns">
+                        <button type="button" id="send-whatsapp-btn" class="nav-btn whatsapp-btn" title="Send your order via WhatsApp"><i class="fab fa-whatsapp whatsapp-icon"></i> Send to WhatsApp</button>
+                        <button type="button" id="call-btn" class="nav-btn admin-btn" title="Call the store directly"><i class="fas fa-phone-alt call-icon"></i> Call</button>
+                    </div>
+                    <div class="item-order-btn-desc">Choose <b>Send to WhatsApp</b> to message the store owner, or <b>Call</b> to dial the store directly.</div>
+                </form>
+            </div>
+        </div>
+        <div id="location-modal" class="product-modal">
+            <div class="product-modal-content">
+                <div class="modal-header">
+                    <button class="nav-btn modal-back-btn" id="location-modal-back">Back</button>
+                </div>
+                <h3>Store Location</h3>
+                <div class="location-modal-desc">
+                    Our store is located at Door Number 19, Tamasha One Building, adjacent to Forestview Building in Cheptulu, Kaimosi. For easy access, enter Tamasha One Building from the main road; our entrance is next to Forestview Building. We look forward to welcoming you!
+                </div>
+                <button class="nav-btn location-map-btn" id="open-map-btn">Open in Google Maps</button>
+            </div>
+        </div>
+        <div id="item-image-modal" class="product-modal">
+            <div class="product-modal-content item-image-modal-content">
+                <div class="modal-header">
+                    <button class="nav-btn modal-back-btn" id="item-image-modal-back">Back</button>
+                </div>
+                <img id="item-image-modal-img" src="" alt="Item Image" class="item-image-modal-img">
+            </div>
+        </div>
+    </div>
+    <!-- Contact Information at the bottom -->
+    <div class="section card" id="contact-section">
+    <h2 class="contact-title">Contact Us</h2>
+    <div id="contact-buttons"></div>
+    <div class="contact-desc">Please select a location above to view WhatsApp and Call contact options for that branch.</div>
+    </div>
+    <div class="footer">
+        <div>&copy; 2025 Ochola Superstore. All rights reserved.</div>
+        <div class="admin-access">
+            <span class="admin-text" onclick="showAdminPrompt()">2025</span>
+        </div>
+    </div>
+
+    <!-- Admin Password Modal -->
+    <div id="admin-password-modal" class="product-modal">
+        <div class="product-modal-content admin-password-modal-content">
+            <div class="modal-header">
+                <button class="nav-btn modal-back-btn" id="admin-password-modal-back">Back</button>
+            </div>
+            <h3>Admin Access</h3>
+            <input type="password" id="admin-password" class="item-order-input" placeholder="Enter admin password">
+            <button class="nav-btn admin-btn" onclick="checkAdminPassword()">Access Admin Panel</button>
+        </div>
+    </div>
+
+    <!-- Chatbot Interface -->
+    <div class="chatbot-container">
+        <button class="chatbot-toggle" title="Open chat assistant">
+            <i class="fas fa-comments" aria-hidden="true"></i>
+        </button>
+        <div class="chatbot-box">
+            <div class="chatbot-header">
+                <span>Store Assistant</span>
+                <select id="chatbot-language-select" class="chatbot-lang-select" title="Select chatbot language" aria-label="Select chatbot language">
+                    <option value="en">English</option>
+                    <option value="sw">Kiswahili</option>
+                    <option value="luo">Luo</option>
+                    <option value="kisii">Kisii</option>
+                    <option value="luhya">Luhya</option>
+                    <option value="kalenjin">Kalenjin</option>
+                    <option value="kamba">Kamba</option>
+                </select>
+                <button class="chatbot-close" title="Close chat">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                    <span class="sr-only">Close chat</span>
+                </button>
+            </div>
+            <div class="chatbot-messages"></div>
+            <div class="chatbot-input">
+                <input type="text" placeholder="Type your question..." id="chatbot-input-field" aria-label="Chat message">
+                <button class="chatbot-send" title="Send message">
+                    <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                    <span class="sr-only">Send message</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { storeData } from './store-data.js';
+        import config from './config.js';
+        
+        // Initialize everything when the page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initial sync with GitHub storage
+            await storeData.syncWithLocalStorage();
+            loadCategories();
+            loadAnnouncements(); // Load announcements immediately
+            loadStoreLocations();
+            // Reload announcements every minute to ensure they're up to date
+            setInterval(loadAnnouncements, 60000);
+
+            // Modal Back button handlers
+            document.getElementById('product-modal-back').onclick = function() {
+                document.getElementById('product-modal').style.display = 'none';
+            };
+            document.getElementById('item-order-modal-back').onclick = function() {
+                document.getElementById('item-order-modal').style.display = 'none';
+            };
+            document.getElementById('location-modal-back').onclick = function() {
+                document.getElementById('location-modal').style.display = 'none';
+            };
+            document.getElementById('item-image-modal-back').onclick = function() {
+                document.getElementById('item-image-modal').style.display = 'none';
+            };
+            var adminBackBtn = document.getElementById('admin-password-modal-back');
+            if (adminBackBtn) {
+                adminBackBtn.onclick = function() {
+                    document.getElementById('admin-password-modal').style.display = 'none';
+                };
+            }
+        });
+
+        // Load categories from GitHub storage
+        async function loadCategories() {
+            let categories = await storeData.getCategories();
+            const container = document.getElementById('categories');
+            container.innerHTML = '';
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'nav-btn';
+                btn.textContent = cat;
+                btn.style.background = 'linear-gradient(90deg, #43e97b 0%, #38f9d7 100%)';
+                btn.style.margin = '10px 0';
+                btn.onclick = function() {
+                    openProductModal(cat);
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        async function openProductModal(category) {
+            const modal = document.getElementById('product-modal');
+            const title = document.getElementById('product-modal-title');
+            const list = document.getElementById('product-modal-list');
+            title.textContent = category + ' Products';
+            let products = await storeData.getItems(category);
+            list.innerHTML = '';
+            if (products.length === 0) {
+                list.innerHTML = '<div style="color:#388e3c;">No products available</div>';
+            } else {
+                products.forEach(prod => {
+                    const itemName = typeof prod === 'object' ? prod.name : prod;
+                    const itemImages = typeof prod === 'object' && Array.isArray(prod.images) ? prod.images : (typeof prod === 'object' && prod.image ? [prod.image] : []);
+                    const itemDiv = document.createElement('div');
+                    itemDiv.style.display = 'flex';
+                    itemDiv.style.alignItems = 'center';
+                    itemDiv.style.gap = '10px';
+                    itemDiv.style.padding = '8px 0';
+                    itemDiv.style.cursor = 'pointer';
+                    itemDiv.style.color = '#388e3c';
+                    if (itemImages.length) {
+                        itemImages.forEach((imgSrc, imgIdx) => {
+                            const img = document.createElement('img');
+                            img.src = imgSrc;
+                            img.alt = itemName + ' ' + (imgIdx + 1);
+                            img.style.height = '32px';
+                            img.style.width = '32px';
+                            img.style.objectFit = 'cover';
+                            img.style.borderRadius = '6px';
+                            img.style.transition = 'box-shadow 0.2s';
+                            img.style.boxShadow = '0 2px 8px rgba(44,62,80,0.10)';
+                            img.onclick = function(e) {
+                                e.stopPropagation();
+                                document.getElementById('item-image-modal-img').src = imgSrc;
+                                document.getElementById('item-image-modal').style.display = 'block';
+                            };
+                            img.style.cursor = 'zoom-in';
+                            itemDiv.appendChild(img);
+                        });
+                    }
+                    const nameSpan = document.createElement('span');
+                    nameSpan.textContent = itemName;
+                    itemDiv.appendChild(nameSpan);
+                    itemDiv.onclick = function() {
+                        openItemOrderModal(category, itemName);
+                    };
+                    list.appendChild(itemDiv);
+                });
+            }
+            modal.style.display = 'block';
+        }
+
+        function handlePriceSelection(value) {
+            const customPrice = document.getElementById('custom-price');
+            const amountInput = document.getElementById('item-order-amount');
+            
+            if (value === 'custom') {
+                // Show custom price input
+                customPrice.classList.remove('hidden');
+                amountInput.required = true;
+                amountInput.value = '';
+                amountInput.focus();
+            } else {
+                // Hide custom price input and set the selected price
+                customPrice.classList.add('hidden');
+                amountInput.required = false;
+                if (value) {
+                    amountInput.value = value;
+                }
+            }
+            console.log('Price selected:', value); // Debug line to verify selection
+        }
+
+        function openItemOrderModal(category, itemName) {
+            document.getElementById('product-modal').style.display = 'none';
+            const modal = document.getElementById('item-order-modal');
+            document.getElementById('item-order-title').textContent = `Order: ${itemName} (${category})`;
+            document.getElementById('item-order-amount').value = '';
+            document.getElementById('item-order-desc').value = '';
+            
+            // Set up price options
+            const priceSelect = document.getElementById('price-options');
+            const customPriceDiv = document.getElementById('custom-price');
+            priceSelect.innerHTML = '<option value="">Choose a price option...</option>';
+            
+            let products = JSON.parse(localStorage.getItem('items_' + category) || '[]');
+            let itemObj = products.find(i => (typeof i === 'object' ? i.name : i) === itemName);
+            
+            if (itemObj && itemObj.priceOptions && itemObj.priceOptions.length > 0) {
+                // Show the price selection dropdown
+                priceSelect.style.display = 'block';
+                customPriceDiv.classList.add('hidden');
+                
+                // Sort price options by price amount
+                const sortedPriceOptions = [...itemObj.priceOptions].sort((a, b) => a.price - b.price);
+                
+                // Add all price options to the dropdown
+                sortedPriceOptions.forEach(option => {
+                    const optionEl = document.createElement('option');
+                    optionEl.value = option.price;
+                    optionEl.textContent = `${option.description} - Ksh ${option.price}`;
+                    priceSelect.appendChild(optionEl);
+                });
+                
+                // Select the first price option by default
+                if (sortedPriceOptions.length > 0) {
+                    priceSelect.value = sortedPriceOptions[0].price;
+                    document.getElementById('item-order-amount').value = sortedPriceOptions[0].price;
+                }
+                
+                // Add custom price option
+                const customOption = document.createElement('option');
+                customOption.value = 'custom';
+                customOption.textContent = 'Enter Custom Amount...';
+                priceSelect.appendChild(customOption);
+            } else {
+                // If no price options, show only custom price input
+                priceSelect.style.display = 'none';
+                customPriceDiv.classList.remove('hidden');
+            }
+            
+            modal.style.display = 'block';
+            // Save item info for sending
+            modal.dataset.category = category;
+            modal.dataset.itemName = itemName;
+            // Get item details from localStorage
+            const items = JSON.parse(localStorage.getItem('items_' + category) || '[]');
+            const item = items.find(i => (typeof i === 'object' ? i.name : i) === itemName);
+            modal.dataset.whatsapp = itemObj && itemObj.whatsapp ? itemObj.whatsapp : (localStorage.getItem('whatsapp_number') || '254791941974');
+            modal.dataset.call = itemObj && itemObj.call ? itemObj.call : '';
+        }
+        // Initialize event handlers for modal buttons
+        function initializeModalHandlers() {
+            document.getElementById('send-whatsapp-btn').onclick = function() {
+                const modal = document.getElementById('item-order-modal');
+                const category = modal.dataset.category;
+                const itemName = modal.dataset.itemName;
+                const amount = document.getElementById('item-order-amount').value;
+                const desc = document.getElementById('item-order-desc').value;
+                const waNumber = modal.dataset.whatsapp || '+254791941974';
+                const message = `Order for ${itemName} (${category}):\nAmount: Ksh ${amount}\nDescription: ${desc}`;
+                const url = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+                window.open(url, '_blank');
+                modal.style.display = 'none';
+            };
+        }
+        document.getElementById('send-whatsapp-btn').onclick = function() {
+            const modal = document.getElementById('item-order-modal');
+            const category = modal.dataset.category;
+            const itemName = modal.dataset.itemName;
+            const amount = document.getElementById('item-order-amount').value;
+            const desc = document.getElementById('item-order-desc').value;
+            const waNumber = modal.dataset.whatsapp || '254791941974';
+            const formattedNumber = waNumber.replace(/^\+/, '');
+            const message = `Order for ${itemName} (${category}):\nAmount: Ksh ${amount}\nDescription: ${desc}`;
+            const url = `https://wa.me/${formattedNumber}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+            modal.style.display = 'none';
+        };
+
+        // Format phone number for calling apps
+        function formatPhoneNumber(number) {
+            // Remove any non-digit characters except +
+            let cleaned = number.replace(/[^\d+]/g, '');
+            // Ensure it starts with + if it's not there
+            if (!cleaned.startsWith('+')) {
+                cleaned = '+' + cleaned;
+            }
+            // Format for display: +254 791 941 974
+            let formatted = cleaned.replace(/(\+\d{3})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4');
+            return {
+                uri: `tel:${cleaned}`,
+                display: formatted
+            };
+        }
+
+        document.getElementById('call-btn').onclick = function() {
+            const modal = document.getElementById('item-order-modal');
+            const phoneNumber = formatPhoneNumber(modal.dataset.call || '+254791941974');
+            if (confirm(`Call ${phoneNumber.display}?`)) {
+                window.open(phoneNumber.uri);
+                modal.style.display = 'none';
+            }
+        };
+            
+        document.getElementById('main-call-btn').onclick = function() {
+            const phoneNumber = formatPhoneNumber(localStorage.getItem('call_number') || '+254791941974');
+            if (confirm(`Call ${phoneNumber.display}?`)) {
+                window.open(phoneNumber.uri);
+            }
+        };
+        document.getElementById('location-btn').onclick = function() {
+            document.getElementById('location-modal').style.display = 'block';
+        };
+        document.getElementById('open-map-btn').onclick = function() {
+            const address = encodeURIComponent('Door number 19, Tamasha One building, Next to Forestview building, Cheptulu, Kaimosi');
+            window.open('https://www.google.com/maps/search/?api=1&query=' + address, '_blank');
+        };
+        // Initialize everything when the page loads
+        function initializePage() {
+            loadCategories();
+            initializeModalHandlers();
+        }
+
+        // Call initialize on page load
+        initializePage();
+
+        // Listen for storage changes (admin updates)
+        window.addEventListener('storage', function(e) {
+            if (
+                e.key === 'categories' ||
+                (e.key && e.key.startsWith('items_')) ||
+                e.key === 'announcements' ||
+                e.key === 'store_locations' ||
+                e.key === 'whatsapp_number' ||
+                e.key === 'call_number'
+            ) {
+                loadCategories();
+                loadAnnouncements();
+                loadStoreLocations();
+            }
+        });
+        // WhatsApp contact
+        function sendWhatsAppMessage() {
+            const whatsappNumber = localStorage.getItem('whatsapp_number') || '254791941974';
+            // Format the WhatsApp number (remove + if present)
+            const formattedNumber = whatsappNumber.replace(/^\+/, '');
+            // Direct to WhatsApp
+            const url = `https://wa.me/${formattedNumber}`;
+            window.open(url, '_blank');
+        }
+        function showAdminPrompt() {
+            document.getElementById('admin-password-modal').style.display = 'block';
+            document.getElementById('admin-password').value = '';
+            document.getElementById('admin-password').focus();
+        }
+
+        function checkAdminPassword() {
+            const password = document.getElementById('admin-password').value;
+            if (password === '15405681540568') {
+                window.location.href = 'admin.html';
+            } else {
+                alert('Incorrect password. Please try again.');
+                document.getElementById('admin-password').value = '';
+                document.getElementById('admin-password').focus();
+            }
+        }
+
+        // Add event listener for Enter key in password field
+        document.addEventListener('DOMContentLoaded', async function() {
+            const passwordInput = document.getElementById('admin-password');
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    checkAdminPassword();
+                }
+            });
+            
+            // Load store information
+            try {
+                // Initial sync with GitHub
+                await storeData.syncWithLocalStorage();
+                
+                // Load data from GitHub storage
+                await Promise.all([
+                    loadAnnouncements(),
+                    loadStoreLocations(),
+                    loadCategories()
+                ]);
+            } catch (error) {
+                console.error('Error loading store data:', error);
+                alert('Error loading store data. Please try refreshing the page.');
+            }
+
+            // Modal close button handlers
+            var closeBtn = document.getElementById('item-image-modal-close');
+            if (closeBtn) {
+                closeBtn.onclick = function() {
+                    document.getElementById('item-image-modal').style.display = 'none';
+                };
+            }
+
+            // Close modals when clicking outside
+            window.onclick = function(event) {
+                const modals = [
+                    document.getElementById('product-modal'),
+                    document.getElementById('item-order-modal'),
+                    document.getElementById('location-modal'),
+                    document.getElementById('item-image-modal')
+                ];
+
+                modals.forEach(modal => {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            };
+        });
+
+        async function loadAnnouncements() {
+            try {
+                const announcement = await storeData.getAnnouncements();
+                const announcementsContainer = document.getElementById('announcements');
+                
+                // Clear previous announcements
+                announcementsContainer.innerHTML = '';
+                
+                if (announcement) {
+                    
+                    if (announcement && announcement.trim() !== '') {
+                        announcementsContainer.innerHTML = `
+                            <div class="announcement-banner">
+                                <div class="announcement-text">
+                                    ${announcement}
+                                    <span style="padding: 0 50px;"></span>
+                                </div>
+                            </div>
+                        `;
+
+                        // Adjust animation speed based on text length
+                        const textElement = announcementsContainer.querySelector('.announcement-text');
+                        if (textElement) {
+                            const textLength = announcement.length;
+                            const speed = Math.max(20, Math.min(10 + textLength / 2, 40)); // between 20 and 40 seconds
+                            textElement.style.animationDuration = speed + 's';
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading announcements:', error);
+            }
+        }
+
+        async function loadStoreLocations() {
+            let locations = await storeData.getLocations();
+            if (!Array.isArray(locations)) {
+                locations = [];
+            }
+            // Always include default location Tamasha One if not present
+            const defaultLocation = {
+                name: 'Tamasha One',
+                address: 'Door 19, Tamasha One Building, adjacent to Forestview Building, Cheptulu, Kaimosi. Enter Tamasha One Building from the main road; our entrance is next to Forestview Building. We look forward to serving you!',
+                whatsapp: '254791941974',
+                call: '+254791941974'
+            };
+            if (!locations.some(loc => loc.name && loc.name.toLowerCase().includes('tamasha one'))) {
+                locations.unshift(defaultLocation);
+            }
+            document.getElementById('debug-locations').textContent = '';
+            const container = document.getElementById('store-locations');
+            const select = document.getElementById('location-select');
+            const info = document.getElementById('selected-location-info');
+            select.innerHTML = '';
+            info.innerHTML = '';
+            select.innerHTML = '<option value="">Select a location...</option>';
+            locations.forEach((loc, idx) => {
+                const option = document.createElement('option');
+                option.value = idx;
+                option.textContent = loc.name;
+                select.appendChild(option);
+            });
+            select.onchange = function() {
+                const idx = select.value;
+                if (idx === '') {
+                    info.innerHTML = '';
+                    document.getElementById('contact-buttons').innerHTML = '';
+                    return;
+                }
+                const loc = locations[idx];
+                info.innerHTML = `
+                    <div class="location-card" style="box-shadow: 0 4px 16px rgba(44,62,80,0.10); background: #f8f9fa; padding: 24px; border-radius: 14px; margin-bottom: 0;">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div style="flex: 1;">
+                                <h3 class="location-name" style="color: #1565c0; font-size: 1.3em; margin-bottom: 8px;">${loc.name}</h3>
+                                <p class="location-info" style="color: #388e3c; font-size: 1.1em; margin-bottom: 8px;"><i class="fas fa-map-marker-alt" style="margin-right: 8px; color: #DB4437;"></i>${loc.address}</p>
+                            </div>
+                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc.address)}" class="maps-btn" target="_blank" style="background: #DB4437; color: #fff; padding: 10px 18px; border-radius: 20px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-map"></i> Map
+                            </a>
+                        </div>
+                    </div>
+                `;
+                let buttons = '';
+                if (loc.whatsapp) {
+                    buttons += `<button class="nav-btn whatsapp-btn" style="font-size: 1.1em; padding: 12px 24px; border-radius: 20px; background: #25D366; color: #fff; font-weight: 600;" onclick="window.open('https://wa.me/${loc.whatsapp}')"><i class='fab fa-whatsapp'></i> WhatsApp</button>`;
+                }
+                if (loc.call) {
+                    buttons += `<button class="nav-btn admin-btn" style="font-size: 1.1em; padding: 12px 24px; border-radius: 20px; background: #1565c0; color: #fff; font-weight: 600;" onclick="window.open('tel:${loc.call}')"><i class='fas fa-phone-alt'></i> Call</button>`;
+                }
+                document.getElementById('contact-buttons').innerHTML = buttons;
+            };
+        }
+    </script>
+</body>
+</html>
